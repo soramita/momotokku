@@ -1,0 +1,13 @@
+@media screen and (width < 1024px) {
+  .container {
+    width: 100%;
+  }
+}
+@media screen and (width > 1450px) {
+  .container {
+    width: 1450px;
+  }
+}
+.container {
+  margin: 0 auto;
+}
