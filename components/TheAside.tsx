@@ -1,16 +1,20 @@
+import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
 const ContainerBox = styled.div`
-  background: red;
-  height: 100vh;
-  width: 450px;
+  background: #4c5b70;
+  height: 100%;
+  width: 100px;
 `;
 const Container = () => {
-  console.log(1);
-
   return (
     <ContainerBox>
-      <div>123</div>
+      <div>
+        <Link href={'/students'}>学生</Link>
+      </div>
+      <div>
+        <Link href={'/studentMessage'}>消息</Link>
+      </div>
     </ContainerBox>
   );
 };

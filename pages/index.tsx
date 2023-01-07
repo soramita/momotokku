@@ -1,12 +1,12 @@
-import Layout from '@/layout/Layout';
-import React, { memo } from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
 const Home = () => {
-  return (
-    <>
-      <Layout>
-        <a href="">123</a>
-      </Layout>
-    </>
-  );
+  const router = useRouter();
+  useEffect(() => {
+    if (router.pathname == '/') {
+      router.push('/students');
+    }
+  });
+  return <></>;
 };
-export default memo(Home);
+export default Home;
