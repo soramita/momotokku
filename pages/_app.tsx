@@ -5,6 +5,7 @@ import '@fontsource/m-plus-rounded-1c/800.css';
 import '@fontsource/kosugi-maru';
 import '@/styles/index.css';
 import Layout from '@/layout/Layout';
+import '@/locales/index';
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <Layout>

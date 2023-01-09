@@ -1,6 +1,6 @@
 import Aside from '@/components/TheAside';
 import Header from '@/components/TheHeader';
-import React, { memo } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import style from './Layout.module.scss';
 const Container = styled.div`

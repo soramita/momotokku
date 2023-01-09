@@ -1,3 +1,6 @@
 body {
   font-family: 'Kosugi Maru', sans-serif;
 }
+.active-class {
+  background-color: #dce5ec;
+}

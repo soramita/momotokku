@@ -5,6 +5,13 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        hostname: 'avatars.githubusercontent.com',
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;

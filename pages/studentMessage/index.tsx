@@ -2,13 +2,8 @@ import StudentList from '@/components/StudentList';
 import { StudentInfo } from '@/components/StudentList/type';
 import Link from 'next/link';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-const List = styled.div``;
-const Left = styled.div`
-  width: 50%;
-  border-right: 1px solid #e8e8e8;
-  background-color: #f3f7f8;
-`;
 const Right = styled.div`
   width: 50%;
 `;
@@ -25,9 +20,10 @@ const list: Array<StudentInfo> = [
   },
 ];
 const StudentMessage = () => {
+  const { t } = useTranslation();
   return (
     <>
-      <StudentList title={'未读信息'} filters={[]} studentList={list}></StudentList>
+      <StudentList title={t('未读消息')} filters={[]} studentList={list}></StudentList>
       <Right>123</Right>
     </>
   );
