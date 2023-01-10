@@ -1,5 +1,10 @@
 import React from 'react';
+import StudentMessage from '.';
 const StudentMessageId = () => {
-  return <div>1</div>;
+  return (
+    <StudentMessage>
+      <div>123</div>
+    </StudentMessage>
+  );
 };
 export default StudentMessageId;

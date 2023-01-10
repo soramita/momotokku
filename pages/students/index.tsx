@@ -1,36 +1,45 @@
 import StudentList from '@/components/StudentList';
-import { StudentInfo } from '@/components/StudentList/type';
-import { NextPage } from 'next';
-import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { IResponse } from '../api/type';
-import Layout from './layout';
+import studentInfo from '@/config/studentInfo';
+import { useRouter } from 'next/router';
+import BaseRight from '@/components/BaseRight';
+import { Filters } from '@/components/StudentList/type';
 type Props = {
-  studentInfo: IResponse<Array<StudentInfo>>;
+  children: JSX.Element;
 };
 const Right = styled.div`
   width: 50%;
+  height: 100%;
 `;
-const Students = ({ studentInfo }: Props) => {
+const filterList: Filters = [
+  {
+    id: 1,
+    name: '姓名',
+  },
+  {
+    id: 2,
+    name: '学校',
+  },
+  {
+    id: 3,
+    name: '羁绊等级',
+  },
+];
+const Students = ({ children }: Props) => {
   const { t } = useTranslation();
   const router = useRouter();
   return (
     <>
-      <StudentList title={t('学生')} filters={[]} studentList={studentInfo.data}></StudentList>
-      <button onClick={() => router.push('/students/1')}>123</button>
-      <Layout>
-        <Right></Right>
-      </Layout>
+      <StudentList
+        path="/students"
+        title={t('学生')}
+        filters={filterList}
+        studentList={studentInfo}
+      ></StudentList>
+      <Right>{router.query.id ? children : <BaseRight />}</Right>
     </>
   );
-};
-Students.getInitialProps = async () => {
-  const res = await fetch('http://localhost:3000/api/student');
-  const studentInfo = await res.json();
-  return {
-    studentInfo: studentInfo,
-  };
 };
 export default Students;

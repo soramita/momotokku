@@ -1,16 +1,17 @@
-import { useRouter } from 'next/router';
+import { WithRouterProps } from 'next/dist/client/with-router';
+import { withRouter } from 'next/router';
+import Image from 'next/image';
 import React from 'react';
 import Students from '.';
-import Layout from './layout';
-const StudentsId = () => {
-  const router = useRouter();
-  console.log(router.query);
+const StudentsId = ({ router }: WithRouterProps) => {
   return (
     <>
-      <Layout>
-        <div>123</div>
-      </Layout>
+      <Students>
+        <div>
+          <Image src={''} alt=""></Image>
+        </div>
+      </Students>
     </>
   );
 };
-export default StudentsId;
+export default withRouter(StudentsId);

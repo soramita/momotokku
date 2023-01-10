@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 const HeaderBox = styled.div`
-  background: linear-gradient(to right, #f7b5c6, #f591aa);
+  background: linear-gradient(to right, #f1a4b8, #f5678b);
   height: 64px;
   border-radius: 10px 10px 0 0;
 `;

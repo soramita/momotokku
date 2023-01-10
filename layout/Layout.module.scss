@@ -1,16 +1,9 @@
-@media screen and (width < 1024px) {
-  .container {
-    width: 100%;
-  }
-}
-@media screen and (width > 1450px) {
-  .container {
-    width: 1450px;
-  }
-}
 .container {
   margin: 0 auto;
   height: 100vh;
+  width: 1200px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 0 5px 3px rgba($color: #000000, $alpha: 0.2);
+  border-radius: 10px;
 }

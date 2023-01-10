@@ -1,0 +1,32 @@
+export default [
+  {
+    id: 1,
+    name: '张三1',
+    avatar: 'https://avatars.githubusercontent.com/u/88105709?v=4',
+    birthday: '5月9日',
+    introduce: '你好',
+    lastSpeech: 'hello',
+    kizunaRank: 100,
+    school: 'yyy',
+  },
+  {
+    id: 2,
+    name: '张三2',
+    avatar: 'https://avatars.githubusercontent.com/u/88105709?v=4',
+    birthday: '5月9日',
+    introduce: 'hello',
+    lastSpeech: 'hello',
+    kizunaRank: 100,
+    school: 'yyy',
+  },
+  {
+    id: 3,
+    name: '张三3',
+    avatar: 'https://avatars.githubusercontent.com/u/88105709?v=4',
+    birthday: '5月9日',
+    introduce: 'hello',
+    lastSpeech: 'hello',
+    kizunaRank: 100,
+    school: 'yyy',
+  },
+];

@@ -3,7 +3,9 @@ type FilterInfo = {
   name: string;
 };
 
-type Filters = Array<FilterInfo>;
+type Path = '/students' | '/studentMessage';
+
+export type Filters = Array<FilterInfo>;
 
 export type StudentInfo = {
   id: number;
@@ -17,7 +19,12 @@ export type StudentInfo = {
 };
 
 export interface StudentListProps {
+  /**路由跳转路径 */
+  path: Path;
+  /**标题 */
   title: string;
+  /**过滤的字段 */
   filters: Filters;
+  /**学生信息列表 */
   studentList: Array<StudentInfo>;
 }
