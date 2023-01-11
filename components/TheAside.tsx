@@ -1,3 +1,4 @@
+import localstorageUtil from '@/utils/localstorage-util';
 import Link from 'next/link';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +10,14 @@ const ContainerBox = styled.div`
 `;
 const Container = () => {
   const { t, i18n } = useTranslation();
+  const { setLocal } = localstorageUtil();
+  const handleChange = (code: string, language: string) => {
+    i18n.changeLanguage(code);
+    setLocal('locales', {
+      code,
+      language,
+    });
+  };
   return (
     <ContainerBox>
       <div>
@@ -17,8 +26,8 @@ const Container = () => {
       <div>
         <Link href={'/studentMessage'}>消息</Link>
       </div>
-      <button onClick={() => i18n.changeLanguage('ja-JP')}>jp</button>
-      <button onClick={() => i18n.changeLanguage('zh-CN')}>cn</button>
+      <button onClick={() => handleChange('ja-JP', '日本語')}>jp</button>
+      <button onClick={() => handleChange('zh-CN', '简体中文')}>cn</button>
     </ContainerBox>
   );
 };

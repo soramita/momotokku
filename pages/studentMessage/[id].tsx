@@ -1,9 +1,10 @@
+import ChatBox from '@/components/ChatBox';
 import React from 'react';
 import StudentMessage from '.';
 const StudentMessageId = () => {
   return (
     <StudentMessage>
-      <div>123</div>
+      <ChatBox></ChatBox>
     </StudentMessage>
   );
 };

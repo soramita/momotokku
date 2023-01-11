@@ -4,3 +4,9 @@ body {
 .active-class {
   background-color: #dce5ec;
 }
+input {
+  outline: none;
+}
+* {
+  box-sizing: border-box;
+}

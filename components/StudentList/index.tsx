@@ -1,10 +1,14 @@
 import React, { FC, memo, useEffect, useState } from 'react';
 import Image from 'next/image';
-import { StudentListProps } from './type';
+import { StudentInfo, StudentListProps } from './type';
 import styled from 'styled-components';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
+import sessionStorageUtil from '@/utils/sessionStorage-util';
+import { SelectStudentList } from '@/types/selectStudent';
+import selectStudentMessage from '@/utils/selectStudentMessage';
+import { SessionMenu } from '@/types/menu';
 type Props = StudentListProps;
 const ListContainer = styled.div`
   width: 50%;
@@ -123,16 +127,24 @@ const activeStyle = {
   backgroundColor: '#f5688c',
   color: 'white',
 };
+
 const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
   const router = useRouter();
   const { t } = useTranslation();
+  const { setSession, getSession } = sessionStorageUtil();
   const [active, setActive] = useState(0);
   const [deg, setDeg] = useState(0);
   const [nowFilter, setNowFilter] = useState(filters[0].name);
   const [showFilterBox, setShowFilterBox] = useState(false);
   const [activeFilter, setActiveFilter] = useState(0);
-  const handleActive = (id: number) => {
-    setActive(id);
+  const handleActive = (studentInfo: StudentInfo) => {
+    setActive(studentInfo.id);
+    const msgInfo = selectStudentMessage(studentInfo.id);
+    if (!msgInfo) {
+      const selectStudentList = getSession(SessionMenu.SELECTSTUDENTLIST) as SelectStudentList;
+      selectStudentList.push({ studentId: studentInfo.id, MessageList: [] });
+      setSession(SessionMenu.SELECTSTUDENTLIST, selectStudentList);
+    }
   };
   const handleOk = (id: number) => {
     const res = filters.filter(item => item.id == id);
@@ -224,7 +236,7 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
       </Header>
       {studentList.map(item => {
         return (
-          <Link href={`${path}/${item.id}`} key={item.id} onClick={() => handleActive(item.id)}>
+          <Link href={`${path}/${item.id}`} key={item.id} onClick={() => handleActive(item)}>
             <List style={{ backgroundColor: active == item.id ? '#dce5ec' : '#f3f7f8' }}>
               <Image
                 priority
