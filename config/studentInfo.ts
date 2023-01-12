@@ -1,3 +1,5 @@
+import { StudentInfo } from '@/components/StudentList/type';
+
 export default [
   {
     id: 1,
@@ -5,9 +7,10 @@ export default [
     avatar: 'https://avatars.githubusercontent.com/u/88105709?v=4',
     birthday: '5月9日',
     introduce: '你好',
-    lastSpeech: 'hello',
+    lastSpeech: '',
     kizunaRank: 100,
     school: 'yyy',
+    club: '补课部',
   },
   {
     id: 2,
@@ -15,9 +18,10 @@ export default [
     avatar: 'https://avatars.githubusercontent.com/u/88105709?v=4',
     birthday: '5月9日',
     introduce: 'hello',
-    lastSpeech: 'hello',
+    lastSpeech: '',
     kizunaRank: 100,
     school: 'yyy',
+    club: '补课部',
   },
   {
     id: 3,
@@ -25,8 +29,9 @@ export default [
     avatar: 'https://avatars.githubusercontent.com/u/88105709?v=4',
     birthday: '5月9日',
     introduce: 'hello',
-    lastSpeech: 'hello',
+    lastSpeech: '',
     kizunaRank: 100,
     school: 'yyy',
+    club: '补课部',
   },
-];
+] as Array<StudentInfo>;

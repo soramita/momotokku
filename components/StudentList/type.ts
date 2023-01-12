@@ -16,6 +16,7 @@ export type StudentInfo = {
   birthday: string;
   lastSpeech: string;
   school: string;
+  club: string;
 };
 
 export interface StudentListProps {

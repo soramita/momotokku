@@ -1,17 +1,35 @@
 import sessionStorageUtil from '@/utils/sessionStorage-util';
-import { SelectStudentList } from '@/types/selectStudent';
-import { MessageList } from '@/types/message';
+import { SelectStudent, SelectStudentList } from '@/types/selectStudent';
+import { SessionMenu } from '@/types/menu';
 
-type SelectStudentMessage = (studentId: number) => boolean | MessageList;
+type SelectStudentMessage = (studentId: number) => SelectStudent;
 /**查询与学生的聊天记录 */
 const selectStudentMessage: SelectStudentMessage = studentId => {
   const { getSession, setSession } = sessionStorageUtil();
-  const selectStudentList: SelectStudentList = getSession('select_student_list');
+  let selectStudentList: SelectStudentList = getSession(SessionMenu.SELECTSTUDENTLIST);
   if (!selectStudentList) {
-    setSession('select_student_list', [] as SelectStudentList);
+    setSession(SessionMenu.SELECTSTUDENTLIST, [] as SelectStudentList);
+    selectStudentList = getSession(SessionMenu.SELECTSTUDENTLIST);
   }
-  const res = selectStudentList.find(item => item.studentId == studentId);
-  if (res) return res.MessageList;
-  else return false;
+  const result = selectStudentList.find(item => item.studentId == studentId);
+  if (!result) {
+    console.log(studentId);
+
+    if (studentId) {
+      selectStudentList.push({ studentId, messageList: [] });
+      setSession(SessionMenu.SELECTSTUDENTLIST, selectStudentList);
+      return {
+        studentId,
+        messageList: [],
+      };
+    } else {
+      return {
+        studentId: 0,
+        messageList: [],
+      };
+    }
+  } else {
+    return result;
+  }
 };
 export default selectStudentMessage;

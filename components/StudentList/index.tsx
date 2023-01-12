@@ -73,6 +73,7 @@ const SelectFilterBox = styled.div`
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.2);
+  z-index: 999;
   .title {
     font-weight: 600;
     font-size: 19px;
@@ -139,10 +140,11 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
   const [activeFilter, setActiveFilter] = useState(0);
   const handleActive = (studentInfo: StudentInfo) => {
     setActive(studentInfo.id);
+    setSession(SessionMenu.SELECTSTUDENT, studentInfo);
     const msgInfo = selectStudentMessage(studentInfo.id);
     if (!msgInfo) {
       const selectStudentList = getSession(SessionMenu.SELECTSTUDENTLIST) as SelectStudentList;
-      selectStudentList.push({ studentId: studentInfo.id, MessageList: [] });
+      selectStudentList.push({ studentId: studentInfo.id, messageList: [] });
       setSession(SessionMenu.SELECTSTUDENTLIST, selectStudentList);
     }
   };
@@ -154,7 +156,7 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
   useEffect(() => {
     setActive(Number(router.query.id));
     setActiveFilter(filters[0].id);
-  }, []);
+  }, [router.query.id]);
   return (
     <ListContainer>
       <Header>

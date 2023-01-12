@@ -1,13 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import styleModule from './style.module.scss';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import sessionStorageUtil from '@/utils/sessionStorage-util';
+import useStudentMessage from '@/hooks/useStudentMessage';
+import selectStudentMessage from '@/utils/selectStudentMessage';
+import { v4 as uuid } from 'uuid';
+import { SessionMenu } from '@/types/menu';
 import { MessageList } from '@/types/message';
+import { SelectStudent } from '@/types/selectStudent';
+import { StudentInfo } from '../StudentList/type';
+import teachInfo from '@/config/teachInfo';
 const Content = styled.div`
   height: 100%;
-  padding: 15px;
+  padding: 17px;
+`;
+const StudentMessageBox = styled.div`
+  width: 100%;
+  display: flex;
+  .msg-name {
+    font-weight: 600;
+    font-size: 20px;
+    margin-bottom: 5px;
+  }
+  .msg-content {
+    background-color: #4c5b70;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    width: 100%;
+    color: white;
+    word-wrap: break-word;
+    position: relative;
+    font-size: 18px;
+  }
+  .msg-content::before {
+    content: '';
+    position: absolute;
+    border-left: 5px solid #4c5b70;
+    border-right: 5px solid transparent;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    left: 0;
+    top: 20px;
+    transform-origin: 0 0;
+    transform: rotate(180deg);
+  }
 `;
 const ControlBox = styled.div`
   background-color: #e9e9e9;
@@ -72,6 +111,21 @@ const ExpansionBox = styled.div`
     cursor: pointer;
   }
 `;
+const PersonSelectBox = styled.div`
+  background-color: #4b5a6f;
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  align-items: center;
+  img {
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  div {
+    position: relative;
+  }
+`;
 const expansionSvgList = [
   {
     d: 'M42 54c22-22.8-4.6-41.7-20.7-26.6l5 4.7H8V14l4.5 4.5C42-7.8 75.5 32.8 42 54z',
@@ -99,19 +153,60 @@ const expansionSvgList = [
     title: '删除',
   },
 ];
+/**判断是否连续发言 */
+const isContinuousSpeech = (messageList: MessageList, studentId: number) => {
+  const index = messageList.length - 1;
+  if (messageList.length <= 1) return true;
+  if (messageList[index].studentInfo.id === studentId) return true;
+  return false;
+};
+/**判断当前选择的角色 */
+const style = {
+  position: 'absolute',
+};
 const ChatBox = () => {
   const router = useRouter();
-  const [messageList, setMessageList] = useState<MessageList>();
+  const { getSession } = sessionStorageUtil();
+  if (!getSession<SelectStudent>(SessionMenu.SELECTSTUDENT)) {
+    router.replace('/studentMessage');
+    return <div></div>;
+  }
+  const [selectStudent, { addMessage, reloadMessage }] = useStudentMessage(
+    selectStudentMessage(getSession<StudentInfo>(SessionMenu.SELECTSTUDENT).id)
+  );
   const [expansion, setExpansion] = useState(false);
   const [rotate, setRotate] = useState(0);
-  const [message, changeMessage] = useState('');
+  const [inputMessage, changeInputMessage] = useState('');
   const handleExpansion = () => {
     setExpansion(!expansion);
     expansion ? setRotate(0) : setRotate(90);
   };
+  const handleChangeMessage = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value != ' ') {
+      changeInputMessage(e.target.value);
+    }
+  };
+  const getStudentMessage = () => {
+    console.log(selectStudent);
+  };
+  const sendMessage = (messageType: 'image' | 'text') => {
+    if (inputMessage.length != 0) {
+      const res = isContinuousSpeech(selectStudent.messageList, selectStudent.studentId);
+      const message = {
+        id: uuid(),
+        content: inputMessage,
+        messageType,
+        studentInfo: getSession(SessionMenu.SELECTSTUDENT),
+        continuousSpeech: res,
+      };
+      addMessage(message);
+      changeInputMessage('');
+    }
+  };
   useEffect(() => {
-    console.log(1);
-  });
+    getStudentMessage();
+    reloadMessage();
+  }, [router.query.id]);
   return (
     <div
       style={{
@@ -121,7 +216,35 @@ const ChatBox = () => {
         justifyContent: 'space-between',
       }}
     >
-      <Content></Content>
+      <Content>
+        {selectStudent.messageList.map((item, index) => {
+          return (
+            <StudentMessageBox key={item.id}>
+              <div style={{ width: '75px' }}>
+                {item.continuousSpeech && index == 0 ? (
+                  <div>
+                    <Image
+                      src={item.studentInfo.avatar}
+                      width={64}
+                      height={64}
+                      alt={''}
+                      style={{ borderRadius: '50%' }}
+                    ></Image>
+                  </div>
+                ) : null}
+              </div>
+              <div style={{ maxWidth: '450px' }}>
+                {item.continuousSpeech && index == 0 ? (
+                  <div className="msg-name">{item.studentInfo.name}</div>
+                ) : null}
+                <div className={`msg-content ${index !== 0 ? styleModule.notFirstMessage : ''}`}>
+                  {item.content}
+                </div>
+              </div>
+            </StudentMessageBox>
+          );
+        })}
+      </Content>
       <ControlBox>
         <ExpansionButton
           style={expansion ? { transform: `rotate(${rotate}deg)` } : undefined}
@@ -136,7 +259,7 @@ const ChatBox = () => {
               fill="#4C5B70"
             ></path>
           </svg>
-          <Input placeholder="Aa" value={message} onChange={e => changeMessage(e.target.value)} />
+          <Input placeholder="Aa" value={inputMessage} onChange={e => handleChangeMessage(e)} />
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 64 64"
@@ -146,10 +269,16 @@ const ChatBox = () => {
             <path d="M32 12c11.028 0 20 8.972 20 20s-8.972 20-20 20-20-8.972-20-20 8.972-20 20-20zm0-4C18.746 8 8 18.746 8 32s10.746 24 24 24 24-10.746 24-24S45.254 8 32 8zm11.014 27.882c-3.024 2.39-6.348 3.862-11.012 3.862-4.668 0-7.992-1.472-11.016-3.862l-.986.986C22.254 40.308 26.4 44 32.002 44c5.6 0 9.744-3.692 11.998-7.132zM25 24a3 3 0 100 6 3 3 0 000-6zm14 0a3 3 0 100 6 3 3 0 000-6z"></path>
           </svg>
         </div>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 64 64"
+          width="32"
+          height="32"
+          onClick={() => sendMessage('text')}
+        >
           <path
             d="M56 8L44 52 28 38l15-17-21 15-14-4zM26 41v15l7-9z"
-            fill={message.length ? '#4C5B70' : '#bfc2c8'}
+            fill={inputMessage.length ? '#4C5B70' : '#bfc2c8'}
           ></path>
         </svg>
       </ControlBox>
@@ -164,6 +293,14 @@ const ChatBox = () => {
           );
         })}
       </ExpansionBox>
+      <PersonSelectBox>
+        <div>
+          <Image src={teachInfo.avatar} width={48} height={48} alt="" />
+        </div>
+        <div>
+          <Image src={teachInfo.avatar} width={48} height={48} alt="" />
+        </div>
+      </PersonSelectBox>
     </div>
   );
 };
