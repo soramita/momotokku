@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import styleModule from './style.module.scss';
 import Image from 'next/image';
@@ -9,12 +9,16 @@ import selectStudentMessage from '@/utils/selectStudentMessage';
 import { v4 as uuid } from 'uuid';
 import { SessionMenu } from '@/types/menu';
 import { MessageList } from '@/types/message';
-import { SelectStudent } from '@/types/selectStudent';
 import { StudentInfo } from '../StudentList/type';
 import teachInfo from '@/config/teachInfo';
+import createImgUrl from '@/utils/createImgUrl';
 const Content = styled.div`
   height: 100%;
   padding: 17px;
+  overflow-y: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 const StudentMessageBox = styled.div`
   width: 100%;
@@ -46,6 +50,14 @@ const StudentMessageBox = styled.div`
     top: 20px;
     transform-origin: 0 0;
     transform: rotate(180deg);
+  }
+`;
+const TeachMessageBox = styled(StudentMessageBox)`
+  justify-content: end;
+  .msg-content::before {
+    left: 100%;
+    top: 15px;
+    transform: rotate(0deg);
   }
 `;
 const ControlBox = styled.div`
@@ -156,27 +168,35 @@ const expansionSvgList = [
 /**判断是否连续发言 */
 const isContinuousSpeech = (messageList: MessageList, studentId: number) => {
   const index = messageList.length - 1;
-  if (messageList.length <= 1) return true;
+  if (messageList.length == 0) return false;
   if (messageList[index].studentInfo.id === studentId) return true;
   return false;
 };
 /**判断当前选择的角色 */
 const style = {
-  position: 'absolute',
+  zIndex: 999,
+  top: '0',
+  left: '0',
+  width: '48px',
+  height: '48px',
+  borderRadius: '50%',
+  position: 'absolute' as const,
+  backgroundColor: 'rgba(0,0,0, .5)',
+  cursor: 'pointer',
 };
 const ChatBox = () => {
   const router = useRouter();
   const { getSession } = sessionStorageUtil();
-  if (!getSession<SelectStudent>(SessionMenu.SELECTSTUDENT)) {
-    router.replace('/studentMessage');
-    return <div></div>;
-  }
   const [selectStudent, { addMessage, reloadMessage }] = useStudentMessage(
-    selectStudentMessage(getSession<StudentInfo>(SessionMenu.SELECTSTUDENT).id)
+    selectStudentMessage(getSession<StudentInfo>(SessionMenu.SELECTSTUDENT)?.id)
   );
   const [expansion, setExpansion] = useState(false);
   const [rotate, setRotate] = useState(0);
   const [inputMessage, changeInputMessage] = useState('');
+  //判断当前发言人是否为学生
+  const [isStudentRole, changeIsStudentRole] = useState(true);
+  const messageContent = useRef<HTMLDivElement>(null);
+  const uploadRef = useRef<HTMLInputElement>(null);
   const handleExpansion = () => {
     setExpansion(!expansion);
     expansion ? setRotate(0) : setRotate(90);
@@ -186,17 +206,29 @@ const ChatBox = () => {
       changeInputMessage(e.target.value);
     }
   };
-  const getStudentMessage = () => {
-    console.log(selectStudent);
+  const scrollToBottom = () => {
+    if (messageContent && messageContent.current) {
+      const { current } = messageContent;
+      current.scrollTop = current.scrollHeight;
+    }
   };
-  const sendMessage = (messageType: 'image' | 'text') => {
-    if (inputMessage.length != 0) {
-      const res = isContinuousSpeech(selectStudent.messageList, selectStudent.studentId);
+  const uploadImg = (e: ChangeEvent<HTMLInputElement>) => {
+    const url = createImgUrl(e);
+    sendMessage('image', url);
+    e.target.value = '';
+  };
+  const sendMessage = (messageType: 'image' | 'text', imgUrl?: string) => {
+    if (inputMessage.length != 0 || messageType === 'image') {
+      const res = isContinuousSpeech(
+        selectStudent.messageList,
+        //此处判断当前的角色从而传递连续发言对象的id
+        isStudentRole ? selectStudent.studentId : teachInfo.id
+      );
       const message = {
         id: uuid(),
-        content: inputMessage,
+        content: imgUrl ? imgUrl : inputMessage,
         messageType,
-        studentInfo: getSession(SessionMenu.SELECTSTUDENT),
+        studentInfo: isStudentRole ? getSession<StudentInfo>(SessionMenu.SELECTSTUDENT) : teachInfo,
         continuousSpeech: res,
       };
       addMessage(message);
@@ -204,9 +236,16 @@ const ChatBox = () => {
     }
   };
   useEffect(() => {
-    getStudentMessage();
-    reloadMessage();
-  }, [router.query.id]);
+    if (!getSession(SessionMenu.SELECTSTUDENT)) {
+      router.replace('/studentMessage');
+    }
+    try {
+      reloadMessage();
+    } catch (error) {
+      router.replace('/studentMessage');
+    }
+    scrollToBottom();
+  }, [router.query.id, selectStudent.messageList.length]);
   return (
     <div
       style={{
@@ -216,17 +255,17 @@ const ChatBox = () => {
         justifyContent: 'space-between',
       }}
     >
-      <Content>
-        {selectStudent.messageList.map((item, index) => {
-          return (
+      <Content ref={messageContent}>
+        {selectStudent.messageList.map(item => {
+          return item.studentInfo.id !== 0 ? (
             <StudentMessageBox key={item.id}>
               <div style={{ width: '75px' }}>
-                {item.continuousSpeech && index == 0 ? (
+                {!item.continuousSpeech ? (
                   <div>
                     <Image
                       src={item.studentInfo.avatar}
-                      width={64}
-                      height={64}
+                      width={60}
+                      height={60}
                       alt={''}
                       style={{ borderRadius: '50%' }}
                     ></Image>
@@ -234,14 +273,36 @@ const ChatBox = () => {
                 ) : null}
               </div>
               <div style={{ maxWidth: '450px' }}>
-                {item.continuousSpeech && index == 0 ? (
+                {!item.continuousSpeech ? (
                   <div className="msg-name">{item.studentInfo.name}</div>
                 ) : null}
-                <div className={`msg-content ${index !== 0 ? styleModule.notFirstMessage : ''}`}>
-                  {item.content}
-                </div>
+                {item.messageType === 'text' ? (
+                  <div
+                    className={`msg-content ${
+                      item.continuousSpeech ? styleModule.notFirstMessage : ''
+                    }`}
+                  >
+                    {item.content}
+                  </div>
+                ) : (
+                  <div className="msg-content">
+                    <img src={item.content} width="100%" />
+                  </div>
+                )}
               </div>
             </StudentMessageBox>
+          ) : (
+            <TeachMessageBox key={item.id}>
+              <div style={{ maxWidth: '450px' }}>
+                {item.messageType === 'text' ? (
+                  <div className="msg-content">{item.content}</div>
+                ) : (
+                  <div className="msg-content">
+                    <img src={item.content} width="100%" />
+                  </div>
+                )}
+              </div>
+            </TeachMessageBox>
           );
         })}
       </Content>
@@ -250,15 +311,30 @@ const ChatBox = () => {
           style={expansion ? { transform: `rotate(${rotate}deg)` } : undefined}
           className={expansion ? styleModule.expansion : undefined}
           onClick={handleExpansion}
+          title="展开"
         ></ExpansionButton>
-        <div style={{ position: 'relative', width: '420px', display: 'flex' }}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32">
+        <div style={{ position: 'relative', width: '500px', display: 'flex' }}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 64 64"
+            width="32"
+            height="32"
+            onClick={() => {
+              uploadRef.current?.click();
+            }}
+          >
             <path
               d="M64 6.7v50.6H0V6.7zm-20.6 9a6.4 6.4 0 100 12.8 6.4 6.4 0 000-12.8zm14 33.3l-9.3-14.3a3.1 3.1 0 00-5-.4l-5.6 6.4-10-15.4a3.1 3.1 0 00-5.3 0L6.5 49h51z"
               strokeWidth="8"
               fill="#4C5B70"
             ></path>
           </svg>
+          <input
+            type="file"
+            style={{ display: 'none' }}
+            ref={uploadRef}
+            onChange={e => uploadImg(e)}
+          />
           <Input placeholder="Aa" value={inputMessage} onChange={e => handleChangeMessage(e)} />
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -294,10 +370,12 @@ const ChatBox = () => {
         })}
       </ExpansionBox>
       <PersonSelectBox>
-        <div>
+        <div style={{ position: 'relative' }} onClick={() => changeIsStudentRole(true)}>
+          <div style={!isStudentRole ? style : {}}></div>
           <Image src={teachInfo.avatar} width={48} height={48} alt="" />
         </div>
-        <div>
+        <div style={{ position: 'relative' }} onClick={() => changeIsStudentRole(false)}>
+          <div style={isStudentRole ? style : {}}></div>
           <Image src={teachInfo.avatar} width={48} height={48} alt="" />
         </div>
       </PersonSelectBox>
