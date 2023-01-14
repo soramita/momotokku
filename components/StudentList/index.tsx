@@ -40,6 +40,11 @@ const RhomboidBox = styled.div`
   border-radius: 3px;
   position: relative;
   cursor: pointer;
+  :active {
+    transition: all 0.2s;
+    transform: scale(95%) skew(-10deg);
+    transform-origin: 0% 50%;
+  }
 `;
 const FilterBox = styled(RhomboidBox)`
   width: 110px;
@@ -222,7 +227,7 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
               return (
                 <div
                   key={item.id}
-                  className="content"
+                  className="content button"
                   style={activeFilter == item.id ? activeStyle : undefined}
                   onClick={() => setActiveFilter(item.id)}
                 >
@@ -231,7 +236,7 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
               );
             })}
           </div>
-          <div className="ok" onClick={() => handleOk(activeFilter)}>
+          <div className="ok button" onClick={() => handleOk(activeFilter)}>
             OK
           </div>
         </SelectFilterBox>

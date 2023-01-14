@@ -12,10 +12,13 @@ import { MessageList } from '@/types/message';
 import { StudentInfo } from '../StudentList/type';
 import teachInfo from '@/config/teachInfo';
 import createImgUrl from '@/utils/createImgUrl';
+import Modal from '../Modal';
+import { expansionSvgList, stickerList } from './config';
 const Content = styled.div`
   height: 100%;
   padding: 17px;
   overflow-y: scroll;
+  scroll-behavior: smooth;
   ::-webkit-scrollbar {
     display: none;
   }
@@ -51,6 +54,10 @@ const StudentMessageBox = styled.div`
     transform-origin: 0 0;
     transform: rotate(180deg);
   }
+  .img-content {
+    border: 1px solid #e7ebec;
+    border-radius: 10px;
+  }
 `;
 const TeachMessageBox = styled(StudentMessageBox)`
   justify-content: end;
@@ -62,7 +69,7 @@ const TeachMessageBox = styled(StudentMessageBox)`
 `;
 const ControlBox = styled.div`
   background-color: #e9e9e9;
-  height: 70px;
+  min-height: 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -125,7 +132,7 @@ const ExpansionBox = styled.div`
 `;
 const PersonSelectBox = styled.div`
   background-color: #4b5a6f;
-  height: 80px;
+  min-height: 60px;
   display: flex;
   justify-content: space-between;
   padding: 0 10px;
@@ -138,33 +145,14 @@ const PersonSelectBox = styled.div`
     position: relative;
   }
 `;
-const expansionSvgList = [
-  {
-    d: 'M42 54c22-22.8-4.6-41.7-20.7-26.6l5 4.7H8V14l4.5 4.5C42-7.8 75.5 32.8 42 54z',
-    fill: '#4C5B70',
-    title: '撤销',
-  },
-  {
-    d: 'M58.5 8.2a18.7 18.7 0 00-26.5 0 18.7 18.7 0 00-26.5 0 18.7 18.7 0 000 26.5L32 61.3l26.5-26.6a18.7 18.7 0 000-26.5z',
-    fill: '#4C5B70',
-    title: '羁绊剧情',
-  },
-  {
-    d: 'M22 12V8h20v4zm0 8h20v-4H22zm20 14V24H22v10H10l22 22 22-22z',
-    fill: '#4C5B70',
-    title: '下载',
-  },
-  {
-    d: 'M14 20v36h36V20zm10 28a2 2 0 01-4 0V28a2 2 0 014 0zm10 0a2 2 0 01-4 0V28a2 2 0 014 0zm10 0a2 2 0 01-4 0V28a2 2 0 014 0zm8-36v4H12v-4h11c2 0 4-2 4-4h10c0 2 2 4 4 4z',
-    fill: '#4C5B70',
-    title: '清空',
-  },
-  {
-    d: 'M15.1 61.3L.8 47a2.7 2.7 0 010-3.7L40.6 3.4a2.7 2.7 0 013.8 0l18.8 19a2.6 2.6 0 010 3.7L33.3 56H48v5.3zm9.8-5.3L10.2 41.4 6.4 45l11 10.9zM42.5 9.1L14 37.6l15 15 28.5-28.4z',
-    fill: '#4C5B70',
-    title: '删除',
-  },
-];
+const StickerBox = styled.div`
+  display: grid;
+  height: 100%;
+  width: 100%;
+  grid-template-columns: repeat(4, 1fr);
+  background-color: #dce5ec;
+`;
+
 /**判断是否连续发言 */
 const isContinuousSpeech = (messageList: MessageList, studentId: number) => {
   const index = messageList.length - 1;
@@ -177,8 +165,8 @@ const style = {
   zIndex: 999,
   top: '0',
   left: '0',
-  width: '48px',
-  height: '48px',
+  width: '44px',
+  height: '44px',
   borderRadius: '50%',
   position: 'absolute' as const,
   backgroundColor: 'rgba(0,0,0, .5)',
@@ -187,36 +175,45 @@ const style = {
 const ChatBox = () => {
   const router = useRouter();
   const { getSession } = sessionStorageUtil();
+
   const [selectStudent, { addMessage, reloadMessage }] = useStudentMessage(
     selectStudentMessage(getSession<StudentInfo>(SessionMenu.SELECTSTUDENT)?.id)
   );
   const [expansion, setExpansion] = useState(false);
   const [rotate, setRotate] = useState(0);
   const [inputMessage, changeInputMessage] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
   //判断当前发言人是否为学生
   const [isStudentRole, changeIsStudentRole] = useState(true);
-  const messageContent = useRef<HTMLDivElement>(null);
+
+  const messageContentRef = useRef<HTMLDivElement>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
   const handleExpansion = () => {
     setExpansion(!expansion);
     expansion ? setRotate(0) : setRotate(90);
   };
+  /**输入聊天信息 */
   const handleChangeMessage = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value != ' ') {
       changeInputMessage(e.target.value);
     }
   };
+  /**自动滚动到聊天框底部 */
   const scrollToBottom = () => {
-    if (messageContent && messageContent.current) {
-      const { current } = messageContent;
-      current.scrollTop = current.scrollHeight;
+    if (messageContentRef && messageContentRef.current) {
+      const { current } = messageContentRef;
+      setTimeout(() => {
+        current.scrollTop = current.scrollHeight;
+      }, 300);
     }
   };
+  /**上传图片 */
   const uploadImg = (e: ChangeEvent<HTMLInputElement>) => {
     const url = createImgUrl(e);
     sendMessage('image', url);
     e.target.value = '';
   };
+  /**发送消息 */
   const sendMessage = (messageType: 'image' | 'text', imgUrl?: string) => {
     if (inputMessage.length != 0 || messageType === 'image') {
       const res = isContinuousSpeech(
@@ -234,6 +231,10 @@ const ChatBox = () => {
       addMessage(message);
       changeInputMessage('');
     }
+  };
+  /**关闭Modal */
+  const handleClose = () => {
+    setModalVisible(false);
   };
   useEffect(() => {
     if (!getSession(SessionMenu.SELECTSTUDENT)) {
@@ -255,7 +256,7 @@ const ChatBox = () => {
         justifyContent: 'space-between',
       }}
     >
-      <Content ref={messageContent}>
+      <Content ref={messageContentRef}>
         {selectStudent.messageList.map(item => {
           return item.studentInfo.id !== 0 ? (
             <StudentMessageBox key={item.id}>
@@ -285,9 +286,7 @@ const ChatBox = () => {
                     {item.content}
                   </div>
                 ) : (
-                  <div className="msg-content">
-                    <img src={item.content} width="100%" />
-                  </div>
+                  <img src={item.content} width="100%" className="img-content" />
                 )}
               </div>
             </StudentMessageBox>
@@ -297,9 +296,7 @@ const ChatBox = () => {
                 {item.messageType === 'text' ? (
                   <div className="msg-content">{item.content}</div>
                 ) : (
-                  <div className="msg-content">
-                    <img src={item.content} width="100%" />
-                  </div>
+                  <img src={item.content} width="100%" className="img-content" />
                 )}
               </div>
             </TeachMessageBox>
@@ -309,7 +306,7 @@ const ChatBox = () => {
       <ControlBox>
         <ExpansionButton
           style={expansion ? { transform: `rotate(${rotate}deg)` } : undefined}
-          className={expansion ? styleModule.expansion : undefined}
+          className={`button ${expansion ? styleModule.expansion : undefined}`}
           onClick={handleExpansion}
           title="展开"
         ></ExpansionButton>
@@ -319,6 +316,7 @@ const ChatBox = () => {
             viewBox="0 0 64 64"
             width="32"
             height="32"
+            className="button"
             onClick={() => {
               uploadRef.current?.click();
             }}
@@ -341,9 +339,24 @@ const ChatBox = () => {
             viewBox="0 0 64 64"
             height="28"
             style={{ position: 'absolute', right: '0', top: '1px' }}
+            className="button"
+            onClick={() => setModalVisible(true)}
           >
             <path d="M32 12c11.028 0 20 8.972 20 20s-8.972 20-20 20-20-8.972-20-20 8.972-20 20-20zm0-4C18.746 8 8 18.746 8 32s10.746 24 24 24 24-10.746 24-24S45.254 8 32 8zm11.014 27.882c-3.024 2.39-6.348 3.862-11.012 3.862-4.668 0-7.992-1.472-11.016-3.862l-.986.986C22.254 40.308 26.4 44 32.002 44c5.6 0 9.744-3.692 11.998-7.132zM25 24a3 3 0 100 6 3 3 0 000-6zm14 0a3 3 0 100 6 3 3 0 000-6z"></path>
           </svg>
+          <Modal title="贴纸" visible={modalVisible} onClose={handleClose} width={700}>
+            <StickerBox>
+              {stickerList.map((item, index) => {
+                return (
+                  <img
+                    src={item.path}
+                    key={index}
+                    style={{ width: '150px', backgroundColor: 'white' }}
+                  />
+                );
+              })}
+            </StickerBox>
+          </Modal>
         </div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -355,6 +368,7 @@ const ChatBox = () => {
           <path
             d="M56 8L44 52 28 38l15-17-21 15-14-4zM26 41v15l7-9z"
             fill={inputMessage.length ? '#4C5B70' : '#bfc2c8'}
+            className={inputMessage.length ? 'button' : ''}
           ></path>
         </svg>
       </ControlBox>
@@ -370,13 +384,21 @@ const ChatBox = () => {
         })}
       </ExpansionBox>
       <PersonSelectBox>
-        <div style={{ position: 'relative' }} onClick={() => changeIsStudentRole(true)}>
+        <div
+          style={{ position: 'relative' }}
+          className="button"
+          onClick={() => changeIsStudentRole(true)}
+        >
           <div style={!isStudentRole ? style : {}}></div>
-          <Image src={teachInfo.avatar} width={48} height={48} alt="" />
+          <Image src={teachInfo.avatar} width={44} height={44} alt="" />
         </div>
-        <div style={{ position: 'relative' }} onClick={() => changeIsStudentRole(false)}>
+        <div
+          style={{ position: 'relative' }}
+          className="button"
+          onClick={() => changeIsStudentRole(false)}
+        >
           <div style={isStudentRole ? style : {}}></div>
-          <Image src={teachInfo.avatar} width={48} height={48} alt="" />
+          <Image src={teachInfo.avatar} width={44} height={44} alt="" />
         </div>
       </PersonSelectBox>
     </div>

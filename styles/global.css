@@ -10,3 +10,10 @@ input {
 * {
   box-sizing: border-box;
 }
+button {
+  border: none;
+}
+.button:active {
+  transition: all 0.1s;
+  transform: scale(95%);
+}

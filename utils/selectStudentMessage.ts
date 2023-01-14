@@ -13,8 +13,6 @@ const selectStudentMessage: SelectStudentMessage = studentId => {
   }
   const result = selectStudentList.find(item => item.studentId == studentId);
   if (!result) {
-    console.log(studentId);
-
     if (studentId) {
       selectStudentList.push({ studentId, messageList: [] });
       setSession(SessionMenu.SELECTSTUDENTLIST, selectStudentList);
