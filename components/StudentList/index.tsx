@@ -262,7 +262,7 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
                 }}
               >
                 <Name>{item.name}</Name>
-                <Introduce>{path == '/students' ? item.introduce : item.lastSpeech}</Introduce>
+                <Introduce>{path == '/students' ? item.introduce : ''}</Introduce>
               </div>
               {path == '/students' ? (
                 <div

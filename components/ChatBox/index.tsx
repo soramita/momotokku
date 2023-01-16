@@ -17,6 +17,7 @@ import { expansionSvgList, stickerList } from './config';
 const Content = styled.div`
   height: 100%;
   padding: 17px;
+  padding-bottom: 0;
   overflow-y: scroll;
   scroll-behavior: smooth;
   ::-webkit-scrollbar {
@@ -55,8 +56,9 @@ const StudentMessageBox = styled.div`
     transform: rotate(180deg);
   }
   .img-content {
-    border: 1px solid #e7ebec;
+    border: 2px solid #e7ebec;
     border-radius: 10px;
+    margin-bottom: 8px;
   }
 `;
 const TeachMessageBox = styled(StudentMessageBox)`
@@ -146,11 +148,20 @@ const PersonSelectBox = styled.div`
   }
 `;
 const StickerBox = styled.div`
-  display: grid;
+  display: flex;
   height: 100%;
   width: 100%;
-  grid-template-columns: repeat(4, 1fr);
+  flex-wrap: wrap;
+  justify-content: space-around;
   background-color: #dce5ec;
+  padding: 0 10px 10px 0;
+  img {
+    width: 25%;
+    background-color: white;
+    border-top: 10px solid #dce5ec;
+    border-left: 10px solid #dce5ec;
+    cursor: pointer;
+  }
 `;
 
 /**判断是否连续发言 */
@@ -230,6 +241,7 @@ const ChatBox = () => {
       };
       addMessage(message);
       changeInputMessage('');
+      handleClose();
     }
   };
   /**关闭Modal */
@@ -351,7 +363,7 @@ const ChatBox = () => {
                   <img
                     src={item.path}
                     key={index}
-                    style={{ width: '150px', backgroundColor: 'white' }}
+                    onClick={() => sendMessage('image', item.path)}
                   />
                 );
               })}

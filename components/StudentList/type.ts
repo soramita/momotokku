@@ -14,7 +14,6 @@ export type StudentInfo = {
   introduce: string;
   kizunaRank: number;
   birthday: string;
-  lastSpeech: string;
   school: string;
   club: string;
 };

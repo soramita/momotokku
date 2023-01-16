@@ -1,7 +1,8 @@
 import Aside from '@/components/TheAside';
 import Header from '@/components/TheHeader';
+import createImgUrl from '@/utils/createImgUrl';
 import localstorageUtil from '@/utils/localstorage-util';
-import React, { useEffect } from 'react';
+import React, { ChangeEvent, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import style from './Layout.module.scss';
@@ -15,6 +16,7 @@ const Content = styled.div`
   width: 100%;
   display: flex;
 `;
+
 const Layout = ({ children }: any) => {
   const { getLocal } = localstorageUtil();
   const { i18n } = useTranslation();
