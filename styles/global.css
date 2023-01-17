@@ -9,6 +9,8 @@ input {
 }
 * {
   box-sizing: border-box;
+  outline: none;
+  resize: none;
 }
 button {
   border: none;
