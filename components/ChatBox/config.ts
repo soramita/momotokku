@@ -34,63 +34,63 @@ export const expansionSvgList = [
 /**贴纸图片列表 */
 export const stickerList = [
   {
-    path: '/sticker/01.png',
+    path: '/images/sticker/01.png',
   },
   {
-    path: '/sticker/02.png',
+    path: '/images/sticker/02.png',
   },
   {
-    path: '/sticker/03.png',
+    path: '/images/sticker/03.png',
   },
   {
-    path: '/sticker/04.png',
+    path: '/images/sticker/04.png',
   },
   {
-    path: '/sticker/05.png',
+    path: '/images/sticker/05.png',
   },
   {
-    path: '/sticker/06.png',
+    path: '/images/sticker/06.png',
   },
   {
-    path: '/sticker/07.png',
+    path: '/images/sticker/07.png',
   },
   {
-    path: '/sticker/08.png',
+    path: '/images/sticker/08.png',
   },
   {
-    path: '/sticker/09.png',
+    path: '/images/sticker/09.png',
   },
   {
-    path: '/sticker/10.png',
+    path: '/images/sticker/10.png',
   },
   {
-    path: '/sticker/11.png',
+    path: '/images/sticker/11.png',
   },
   {
-    path: '/sticker/12.png',
+    path: '/images/sticker/12.png',
   },
   {
-    path: '/sticker/13.png',
+    path: '/images/sticker/13.png',
   },
   {
-    path: '/sticker/14.png',
+    path: '/images/sticker/14.png',
   },
   {
-    path: '/sticker/15.png',
+    path: '/images/sticker/15.png',
   },
   {
-    path: '/sticker/16.png',
+    path: '/images/sticker/16.png',
   },
   {
-    path: '/sticker/17.png',
+    path: '/images/sticker/17.png',
   },
   {
-    path: '/sticker/18.png',
+    path: '/images/sticker/18.png',
   },
   {
-    path: '/sticker/19.png',
+    path: '/images/sticker/19.png',
   },
   {
-    path: '/sticker/20.png',
+    path: '/images/sticker/20.png',
   },
 ];

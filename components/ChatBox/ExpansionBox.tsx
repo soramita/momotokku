@@ -25,6 +25,9 @@ const ExpansionBox: FC<Props> = ({ expansion, sendMessage }) => {
     if (type === 'reply') {
       sendMessage('reply');
     }
+    if (type === 'plot') {
+      sendMessage('plot');
+    }
   };
   return (
     <ExpansionContainer style={{ height: expansion ? '200px' : '0px' }}>

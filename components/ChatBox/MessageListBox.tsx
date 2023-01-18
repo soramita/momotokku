@@ -55,13 +55,29 @@ const StudentMessageBox = styled.div`
   }
   .reply-content {
     min-width: 525px;
-    border: 1px solid #d5d5d5;
+    background-color: #e2edef;
+    border: 1px solid #d1d1d1;
     border-radius: 10px;
     padding: 10px;
-    padding-bottom: 0;
     color: #4c5b70;
     font-weight: 600;
     font-size: 18px;
+    margin-bottom: 10px;
+  }
+  .plot-content {
+    min-width: 525px;
+    border: 1px solid #d1d1d1;
+    border-radius: 10px;
+    padding: 10px;
+    color: #4c5b70;
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 10px;
+    background-color: #ffedef;
+    background-image: url('/love.svg');
+    background-repeat: no-repeat;
+    background-size: 27%;
+    background-position: 107%;
   }
 `;
 const TeachMessageBox = styled(StudentMessageBox)`
@@ -74,16 +90,26 @@ const TeachMessageBox = styled(StudentMessageBox)`
 `;
 const ReplyInput = styled.div`
   border: none;
-  border-radius: 3px;
-  box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.3);
+  margin-bottom: 10px;
+  text-align: center;
+  padding: 15px;
+  min-height: 50px;
+  color: #4c5b70;
+  background-color: #fff;
+`;
+const PlotButton = styled.div`
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.3);
   margin-bottom: 10px;
   text-align: center;
   padding: 10px;
-  min-height: 40px;
-  color: #4c5b70;
-  font-weight: 600;
+  color: white;
+  background-color: #ff8e9f;
+  cursor: pointer;
 `;
-
 type Props = {
   selectStudent: SelectStudent;
 };
@@ -177,7 +203,7 @@ const MessageListBox: FC<Props> = ({ selectStudent }) => {
               ) : item.messageType === 'reply' ? (
                 <div className="reply-content">
                   <div style={{ borderLeft: '2px solid #3594f9', paddingLeft: 10 }}>回复</div>
-                  <div style={{ borderTop: '1px solid #d8d8d8', margin: '8px 0' }}></div>
+                  <div style={{ borderTop: '1px solid #c2c2c2', margin: '8px 0' }}></div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     {item.body
                       ? item.body.map(reply => {
@@ -198,7 +224,11 @@ const MessageListBox: FC<Props> = ({ selectStudent }) => {
                   </div>
                 </div>
               ) : (
-                <div>plot</div>
+                <div className="plot-content">
+                  <div style={{ borderLeft: '2px solid #3594f9', paddingLeft: 10 }}>羁绊剧情</div>
+                  <div style={{ borderTop: '1px solid #c2c2c2', margin: '8px 0' }}></div>
+                  <PlotButton>{item.content}</PlotButton>
+                </div>
               )}
             </div>
           </TeachMessageBox>

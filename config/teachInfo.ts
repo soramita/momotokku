@@ -5,7 +5,7 @@ type Teach = StudentInfo;
 export default {
   id: 0,
   name: 'sensei',
-  avatar: 'https://avatars.githubusercontent.com/u/88105709?v=4',
+  avatar: '/images/sensei/sensei.jpeg',
   birthday: '5月9日',
   introduce: '',
   lastSpeech: '',

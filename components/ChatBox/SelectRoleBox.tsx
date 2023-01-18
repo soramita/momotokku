@@ -2,6 +2,9 @@ import teachInfo from '@/config/teachInfo';
 import React, { FC, SetStateAction } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
+import sessionStorageUtil from '@/utils/sessionStorage-util';
+import { StudentInfo } from '../StudentList/type';
+import { SessionMenu } from '@/types/menu';
 const SelectRoleContainer = styled.div`
   background-color: #4b5a6f;
   min-height: 60px;
@@ -34,6 +37,8 @@ const style = {
   cursor: 'pointer',
 };
 const SelectRoleBox: FC<Props> = ({ changeIsStudentRole, isStudentRole }) => {
+  const { getSession } = sessionStorageUtil();
+  const studentRole = getSession<StudentInfo>(SessionMenu.SELECTSTUDENT);
   return (
     <SelectRoleContainer>
       <div
@@ -42,7 +47,7 @@ const SelectRoleBox: FC<Props> = ({ changeIsStudentRole, isStudentRole }) => {
         onClick={() => changeIsStudentRole(true)}
       >
         <div style={!isStudentRole ? style : {}}></div>
-        <Image src={teachInfo.avatar} width={44} height={44} alt="" />
+        <Image src={studentRole.avatar} width={44} height={44} alt="" />
       </div>
       <div
         style={{ position: 'relative' }}

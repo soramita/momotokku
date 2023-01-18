@@ -44,7 +44,15 @@ const useStudentMessage: UseStudentMessage = _selectStudent => {
   const [selectStudent, setMessageList] = useState(_selectStudent);
   const { getSession } = sessionStorageUtil();
   const addMessage: AddMessage = message => {
-    selectStudent.messageList.push(message);
+    //判断当前reply是否是连续创建
+    if (message.messageType === 'reply' && selectStudent.messageList.length != 0 && message.body) {
+      const index = selectStudent.messageList.length;
+      if (selectStudent.messageList[index - 1].messageType === message.messageType) {
+        selectStudent.messageList[index - 1].body?.push(message.body[0]);
+      }
+    } else {
+      selectStudent.messageList.push(message);
+    }
     setMessageList({ ...selectStudent });
     saveSession(_selectStudent.studentId, selectStudent.messageList);
   };
