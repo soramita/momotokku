@@ -1,4 +1,4 @@
-import teachInfo from '@/config/teachInfo';
+import teacherInfo from '@/config/teacherInfo';
 import React, { FC, SetStateAction } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
@@ -47,7 +47,12 @@ const SelectRoleBox: FC<Props> = ({ changeIsStudentRole, isStudentRole }) => {
         onClick={() => changeIsStudentRole(true)}
       >
         <div style={!isStudentRole ? style : {}}></div>
-        <Image src={studentRole.avatar} width={44} height={44} alt="" />
+        <Image
+          src={studentRole?.avatar || 'https://avatars.githubusercontent.com/u/88105709?v=4'}
+          width={44}
+          height={44}
+          alt=""
+        />
       </div>
       <div
         style={{ position: 'relative' }}
@@ -55,7 +60,7 @@ const SelectRoleBox: FC<Props> = ({ changeIsStudentRole, isStudentRole }) => {
         onClick={() => changeIsStudentRole(false)}
       >
         <div style={isStudentRole ? style : {}}></div>
-        <Image src={teachInfo.avatar} width={44} height={44} alt="" />
+        <Image src={teacherInfo.avatar} width={44} height={44} alt="" />
       </div>
     </SelectRoleContainer>
   );

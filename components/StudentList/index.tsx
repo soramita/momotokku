@@ -1,5 +1,4 @@
 import React, { FC, memo, useEffect, useState } from 'react';
-import Image from 'next/image';
 import { StudentInfo, StudentListProps } from './type';
 import styled from 'styled-components';
 import Link from 'next/link';
@@ -245,12 +244,11 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
         return (
           <Link href={`${path}/${item.id}`} key={item.id} onClick={() => handleActive(item)}>
             <List style={{ backgroundColor: active == item.id ? '#dce5ec' : '#f3f7f8' }}>
-              <Image
-                priority
+              <img
                 src={item.avatar}
                 alt=""
-                width={60}
-                height={60}
+                width={64}
+                height={64}
                 style={{ borderRadius: '50%' }}
               />
               <div

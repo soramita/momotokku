@@ -1,6 +1,6 @@
 import { StudentInfo } from '@/components/StudentList/type';
 
-type Teach = StudentInfo;
+type Teacher = StudentInfo;
 
 export default {
   id: 0,
@@ -12,4 +12,4 @@ export default {
   kizunaRank: 0,
   school: '',
   club: '夏莱',
-} as Teach;
+} as Teacher;

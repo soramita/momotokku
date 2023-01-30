@@ -4,7 +4,7 @@ import Modal from '../Modal';
 import styled from 'styled-components';
 import createImgUrl from '@/utils/createImgUrl';
 import { stickerList } from './config';
-import { SendMessage } from './types';
+import { SendMessage, SetMode } from './types';
 const ControlContainer = styled.div`
   background-color: #e9e9e9;
   min-height: 50px;
@@ -55,6 +55,17 @@ const Input = styled.input`
   margin-left: 15px;
   box-sizing: border-box;
 `;
+const RemoveMode = styled.div`
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 5px;
+  margin-left: 15px;
+  text-align: center;
+  background-color: #222222;
+  color: white;
+  cursor: pointer;
+`;
 const StickerBox = styled.div`
   display: flex;
   height: 100%;
@@ -80,6 +91,8 @@ type Props = {
   expansion: boolean;
   inputMessage: string;
   modalVisible: boolean;
+  mode: boolean;
+  setMode: SetMode;
 };
 const ControlBox: FC<Props> = ({
   sendMessage,
@@ -90,6 +103,8 @@ const ControlBox: FC<Props> = ({
   modalVisible,
   expansion,
   inputMessage,
+  mode,
+  setMode,
 }) => {
   const [rotate, setRotate] = useState(0);
 
@@ -143,7 +158,11 @@ const ControlBox: FC<Props> = ({
           ref={uploadRef}
           onChange={e => uploadImg(e)}
         />
-        <Input placeholder="Aa" value={inputMessage} onChange={e => handleChangeMessage(e)} />
+        {mode ? (
+          <RemoveMode onClick={() => setMode(false)}>取消删除模式</RemoveMode>
+        ) : (
+          <Input placeholder="Aa" value={inputMessage} onChange={e => handleChangeMessage(e)} />
+        )}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 64 64"

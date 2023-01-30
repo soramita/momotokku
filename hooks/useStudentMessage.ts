@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 type AddMessage = (message: Message) => void;
 
-type RemoveMessage = (msgId: string) => void;
+export type RemoveMessage = (msgId: string, type?: 'reply', replyId?: string) => void;
 
 type ClearMessage = () => void;
 
@@ -49,6 +49,8 @@ const useStudentMessage: UseStudentMessage = _selectStudent => {
       const index = selectStudent.messageList.length;
       if (selectStudent.messageList[index - 1].messageType === message.messageType) {
         selectStudent.messageList[index - 1].body?.push(message.body[0]);
+      } else {
+        selectStudent.messageList.push(message);
       }
     } else {
       selectStudent.messageList.push(message);
@@ -56,14 +58,23 @@ const useStudentMessage: UseStudentMessage = _selectStudent => {
     setMessageList({ ...selectStudent });
     saveSession(_selectStudent.studentId, selectStudent.messageList);
   };
-  const removeMessage: RemoveMessage = msgId => {
-    const newMessageList = selectStudent.messageList.filter(item => item.id != msgId);
-    setMessageList({ ...selectStudent });
-    saveSession(_selectStudent.studentId, newMessageList);
+  const removeMessage: RemoveMessage = (msgId, type, replyId) => {
+    if (type === 'reply') {
+      _selectStudent.messageList = selectStudent.messageList.map(item => {
+        if (item.id === msgId) {
+          item.body = item.body?.filter(item => item.id != replyId);
+        }
+        return item;
+      });
+    } else {
+      _selectStudent.messageList = selectStudent.messageList.filter(item => item.id != msgId);
+    }
+    setMessageList({ ..._selectStudent });
+    saveSession(_selectStudent.studentId, _selectStudent.messageList);
   };
   const clearMessage: ClearMessage = () => {
     _selectStudent.messageList = [];
-    setMessageList({ ...selectStudent });
+    setMessageList({ ..._selectStudent });
     saveSession(_selectStudent.studentId, _selectStudent.messageList);
   };
   const reloadMessage: ReloadMessage = () => {

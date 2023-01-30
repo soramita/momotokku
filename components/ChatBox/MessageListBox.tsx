@@ -1,14 +1,13 @@
 import React, { ChangeEvent, FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import styleModule from './style.module.scss';
-import Image from 'next/image';
 import { SelectStudent, SelectStudentList } from '@/types/selectStudent';
 import selectStudentMessage from '@/utils/selectStudentMessage';
 import sessionStorageUtil from '@/utils/sessionStorage-util';
 import { SessionMenu } from '@/types/menu';
+import { RemoveMessage } from '@/hooks/useStudentMessage';
 const Content = styled.div`
   height: 100%;
-  padding: 17px;
   padding-bottom: 0;
   overflow-y: scroll;
   scroll-behavior: smooth;
@@ -80,7 +79,7 @@ const StudentMessageBox = styled.div`
     background-position: 107%;
   }
 `;
-const TeachMessageBox = styled(StudentMessageBox)`
+const TeacherMessageBox = styled(StudentMessageBox)`
   justify-content: end;
   .msg-content::before {
     left: 100%;
@@ -112,12 +111,14 @@ const PlotButton = styled.div`
 `;
 type Props = {
   selectStudent: SelectStudent;
+  mode: boolean;
+  removeMessage: RemoveMessage;
 };
 /**选中reply时的样式 */
 const activeReplyStyle = {
   boxShadow: '0 0 1px 2px rgba(255, 179, 66, 0.9)',
 };
-const MessageListBox: FC<Props> = ({ selectStudent }) => {
+const MessageListBox: FC<Props> = ({ selectStudent, mode, removeMessage }) => {
   const { setSession, getSession } = sessionStorageUtil();
   const [activeReply, changeActiveReply] = useState('');
   const messageContentRef = useRef<HTMLDivElement>(null);
@@ -155,85 +156,114 @@ const MessageListBox: FC<Props> = ({ selectStudent }) => {
       setSession(SessionMenu.SELECTSTUDENTLIST, newList);
     }
   };
+  /**删除一个消息 */
+  const removeMode = (msgId: string, type?: 'reply', replyId?: string, body?: Array<any>) => {
+    if (mode) {
+      if (type === 'reply' && body?.length != 1) {
+        removeMessage(msgId, type, replyId);
+        return;
+      }
+      removeMessage(msgId);
+    }
+  };
   useEffect(() => {
     scrollToBottom();
   }, [selectStudent.messageList.length]);
   return (
     <Content ref={messageContentRef}>
-      {selectStudent.messageList.map(item => {
-        return item.studentInfo.id !== 0 ? (
-          <StudentMessageBox key={item.id}>
-            <div style={{ width: '75px' }}>
-              {!item.continuousSpeech ? (
-                <div>
-                  <Image
-                    src={item.studentInfo.avatar}
-                    width={60}
-                    height={60}
-                    alt={''}
-                    style={{ borderRadius: '50%' }}
-                  ></Image>
-                </div>
-              ) : null}
-            </div>
-            <div style={{ maxWidth: '450px' }}>
-              {!item.continuousSpeech ? (
-                <div className="msg-name">{item.studentInfo.name}</div>
-              ) : null}
-              {item.messageType === 'text' ? (
-                <div className="msg-content">{item.content}</div>
-              ) : (
-                <img src={item.content} width="100%" className="img-content" />
-              )}
-            </div>
-          </StudentMessageBox>
-        ) : (
-          <TeachMessageBox key={item.id}>
-            <div style={{ maxWidth: '525px' }}>
-              {item.messageType === 'text' ? (
-                <div
-                  className={`msg-content ${
-                    item.continuousSpeech ? styleModule.notFirstMessage : ''
-                  }`}
-                >
-                  {item.content}
-                </div>
-              ) : item.messageType === 'image' ? (
-                <img src={item.content} width="450" className="img-content" />
-              ) : item.messageType === 'reply' ? (
-                <div className="reply-content">
-                  <div style={{ borderLeft: '2px solid #3594f9', paddingLeft: 10 }}>回复</div>
-                  <div style={{ borderTop: '1px solid #c2c2c2', margin: '8px 0' }}></div>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    {item.body
-                      ? item.body.map(reply => {
-                          return (
-                            <ReplyInput
-                              key={reply.id}
-                              contentEditable
-                              suppressContentEditableWarning
-                              style={activeReply === reply.id ? activeReplyStyle : {}}
-                              onBlur={e => replyChange(e, item.id, reply.id)}
-                              onClick={() => changeActiveReply(reply.id)}
-                            >
-                              {reply.content}
-                            </ReplyInput>
-                          );
-                        })
-                      : null}
+      <div id="content" style={{ padding: '17px' }}>
+        {selectStudent.messageList.map(item => {
+          return item.studentInfo.id !== 0 ? (
+            <StudentMessageBox key={item.id}>
+              <div style={{ width: '75px' }}>
+                {!item.continuousSpeech ? (
+                  <div>
+                    <img
+                      src={item.studentInfo.avatar}
+                      width={60}
+                      height={60}
+                      alt={''}
+                      style={{ borderRadius: '50%' }}
+                    ></img>
                   </div>
-                </div>
-              ) : (
-                <div className="plot-content">
-                  <div style={{ borderLeft: '2px solid #3594f9', paddingLeft: 10 }}>羁绊剧情</div>
-                  <div style={{ borderTop: '1px solid #c2c2c2', margin: '8px 0' }}></div>
-                  <PlotButton>{item.content}</PlotButton>
-                </div>
-              )}
-            </div>
-          </TeachMessageBox>
-        );
-      })}
+                ) : null}
+              </div>
+              <div style={{ maxWidth: '450px' }}>
+                {!item.continuousSpeech ? (
+                  <div className="msg-name">{item.studentInfo.name}</div>
+                ) : null}
+                {item.messageType === 'text' ? (
+                  <div
+                    className={`msg-content ${
+                      item.continuousSpeech ? styleModule.notFirstMessage : ''
+                    }`}
+                    onClick={() => removeMode(item.id)}
+                  >
+                    {item.content}
+                  </div>
+                ) : (
+                  <img
+                    src={item.content}
+                    width="100%"
+                    onClick={() => removeMode(item.id)}
+                    className="img-content"
+                  />
+                )}
+              </div>
+            </StudentMessageBox>
+          ) : (
+            <TeacherMessageBox key={item.id}>
+              <div style={{ maxWidth: '525px' }}>
+                {item.messageType === 'text' ? (
+                  <div className="msg-content" onClick={() => removeMode(item.id)}>
+                    {item.content}
+                  </div>
+                ) : item.messageType === 'image' ? (
+                  <img
+                    src={item.content}
+                    onClick={() => removeMode(item.id)}
+                    width="450"
+                    className="img-content"
+                  />
+                ) : item.messageType === 'reply' ? (
+                  <div className="reply-content">
+                    <div style={{ borderLeft: '2px solid #3594f9', paddingLeft: 10 }}>回复</div>
+                    <div style={{ borderTop: '1px solid #c2c2c2', margin: '8px 0' }}></div>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      {item.body
+                        ? item.body.map(reply => {
+                            return (
+                              <ReplyInput
+                                key={reply.id}
+                                contentEditable
+                                suppressContentEditableWarning
+                                style={activeReply === reply.id ? activeReplyStyle : {}}
+                                onBlur={e => replyChange(e, item.id, reply.id)}
+                                onClick={() =>
+                                  mode
+                                    ? removeMode(item.id, 'reply', reply.id, item.body)
+                                    : changeActiveReply(reply.id)
+                                }
+                              >
+                                {reply.content}
+                              </ReplyInput>
+                            );
+                          })
+                        : null}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="plot-content">
+                    <div style={{ borderLeft: '2px solid #3594f9', paddingLeft: 10 }}>羁绊剧情</div>
+                    <div style={{ borderTop: '1px solid #c2c2c2', margin: '8px 0' }}></div>
+                    <PlotButton>{item.content}</PlotButton>
+                  </div>
+                )}
+              </div>
+            </TeacherMessageBox>
+          );
+        })}
+      </div>
     </Content>
   );
 };

@@ -6,7 +6,7 @@ import selectStudentMessage from '@/utils/selectStudentMessage';
 import { v4 as uuid } from 'uuid';
 import { SessionMenu } from '@/types/menu';
 import { StudentInfo } from '../StudentList/type';
-import teachInfo from '@/config/teachInfo';
+import teacherInfo from '@/config/teacherInfo';
 import MessageListBox from './MessageListBox';
 import { Message, MessageList } from '@/types/message';
 import ControlBox from './ControlBox';
@@ -25,9 +25,8 @@ const isContinuousSpeech = (messageList: MessageList, studentId: number) => {
 const ChatBox = () => {
   const router = useRouter();
   const { getSession } = sessionStorageUtil();
-  const [selectStudent, { addMessage, reloadMessage }] = useStudentMessage(
-    selectStudentMessage(getSession<StudentInfo>(SessionMenu.SELECTSTUDENT)?.id)
-  );
+  const [selectStudent, { addMessage, reloadMessage, clearMessage: _clearMessage, removeMessage }] =
+    useStudentMessage(selectStudentMessage(getSession<StudentInfo>(SessionMenu.SELECTSTUDENT)?.id));
   const [modalVisible, setModalVisible] = useState(false);
   /**关闭Modal */
   const handleClose = () => {
@@ -40,23 +39,32 @@ const ChatBox = () => {
   //判断当前发言人是否为学生
   const [isStudentRole, changeIsStudentRole] = useState(true);
 
+  //进入消息删除模式
+  const [mode, setMode] = useState(false);
+
   /**发送消息 */
   const sendMessage: SendMessage = (messageType, imgUrl) => {
     const res = isContinuousSpeech(
       selectStudent.messageList,
       //此处判断当前的角色从而传递连续发言对象的id
-      isStudentRole ? selectStudent.studentId : teachInfo.id
+      isStudentRole ? selectStudent.studentId : teacherInfo.id
     );
     let message = {} as Message;
     //文字消息
-    if (inputMessage.length != 0 && messageType === 'text') {
-      message = {
-        id: uuid(),
-        content: inputMessage,
-        messageType,
-        studentInfo: isStudentRole ? getSession<StudentInfo>(SessionMenu.SELECTSTUDENT) : teachInfo,
-        continuousSpeech: res,
-      };
+    if (messageType === 'text') {
+      if (inputMessage.length != 0) {
+        message = {
+          id: uuid(),
+          content: inputMessage,
+          messageType,
+          studentInfo: isStudentRole
+            ? getSession<StudentInfo>(SessionMenu.SELECTSTUDENT)
+            : teacherInfo,
+          continuousSpeech: res,
+        };
+      } else {
+        return;
+      }
     }
     //图片消息
     if (messageType === 'image') {
@@ -64,7 +72,9 @@ const ChatBox = () => {
         id: uuid(),
         content: imgUrl,
         messageType,
-        studentInfo: isStudentRole ? getSession<StudentInfo>(SessionMenu.SELECTSTUDENT) : teachInfo,
+        studentInfo: isStudentRole
+          ? getSession<StudentInfo>(SessionMenu.SELECTSTUDENT)
+          : teacherInfo,
         continuousSpeech: res,
       };
     }
@@ -79,7 +89,7 @@ const ChatBox = () => {
           },
         ],
         messageType,
-        studentInfo: teachInfo,
+        studentInfo: teacherInfo,
         continuousSpeech: res,
       };
     }
@@ -89,7 +99,7 @@ const ChatBox = () => {
         id: uuid(),
         content: `前往${getSession<StudentInfo>(SessionMenu.SELECTSTUDENT).name}的羁绊剧情`,
         messageType,
-        studentInfo: teachInfo,
+        studentInfo: teacherInfo,
         continuousSpeech: res,
       };
     }
@@ -97,7 +107,10 @@ const ChatBox = () => {
     changeInputMessage('');
     handleClose();
   };
-
+  /**清空消息 */
+  const clearMessage = () => {
+    _clearMessage();
+  };
   useEffect(() => {
     if (!getSession(SessionMenu.SELECTSTUDENT)) {
       router.replace('/studentMessage');
@@ -118,7 +131,11 @@ const ChatBox = () => {
       }}
     >
       {/**消息列表 */}
-      <MessageListBox selectStudent={selectStudent}></MessageListBox>
+      <MessageListBox
+        selectStudent={selectStudent}
+        mode={mode}
+        removeMessage={removeMessage}
+      ></MessageListBox>
       {/**输入控制栏 */}
       <ControlBox
         sendMessage={sendMessage}
@@ -129,9 +146,17 @@ const ChatBox = () => {
         expansion={expansion}
         modalVisible={modalVisible}
         inputMessage={inputMessage}
+        mode={mode}
+        setMode={setMode}
       ></ControlBox>
       {/**展开的控制栏 */}
-      <ExpansionBox expansion={expansion} sendMessage={sendMessage}></ExpansionBox>
+      <ExpansionBox
+        expansion={expansion}
+        sendMessage={sendMessage}
+        clearMessage={clearMessage}
+        setMode={setMode}
+        mode={mode}
+      ></ExpansionBox>
       {/**角色选择栏 */}
       <SelectRoleBox
         changeIsStudentRole={changeIsStudentRole}
