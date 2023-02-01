@@ -13,6 +13,11 @@ const ListContainer = styled.div`
   width: 50%;
   border-right: 2px solid #e8e8e8;
   background-color: #f3f7f8;
+  overflow-y: scroll;
+  position: relative;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 const List = styled.div`
   border-bottom: 1px solid #e8e8e8;
@@ -23,7 +28,12 @@ const List = styled.div`
 const Header = styled.div`
   padding: 13px 15px;
   border-bottom: 1px solid #e8e8e8;
-  position: relative;
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  background-color: #f3f7f8;
 `;
 const Title = styled.span`
   font-weight: 600;
@@ -177,14 +187,14 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
           </Title>
           <div style={{ display: 'flex' }}>
             <FilterBox onClick={() => setShowFilterBox(!showFilterBox)}>
-              <span>{nowFilter}</span>
+              <span>{t(nowFilter)}</span>
               <i></i>
             </FilterBox>
             <SortBox onClick={() => setDeg(deg + 180)}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 64" width="32">
-                <rect width="68" height="12" rx="0" ry="0"></rect>
-                <rect width="68" height="12" y="49" rx="0" ry="0"></rect>
-                <rect width="68" height="12" y="24.5" rx="0" ry="0"></rect>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 64" width="30">
+                <rect width="68" height="12" fill="#4c5b70"></rect>
+                <rect width="68" height="12" y="49" fill="#4c5b70"></rect>
+                <rect width="68" height="12" y="24.5" fill="#4c5b70"></rect>
                 <path
                   d="M96 0L84 12 72 24l19-1v45h10V23l18 1-12-12z"
                   style={{
@@ -240,60 +250,62 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
           </div>
         </SelectFilterBox>
       </Header>
-      {studentList.map(item => {
-        return (
-          <Link href={`${path}/${item.id}`} key={item.id} onClick={() => handleActive(item)}>
-            <List style={{ backgroundColor: active == item.id ? '#dce5ec' : '#f3f7f8' }}>
-              <img
-                src={item.avatar}
-                alt=""
-                width={64}
-                height={64}
-                style={{ borderRadius: '50%' }}
-              />
-              <div
-                style={{
-                  marginLeft: 10,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-around',
-                }}
-              >
-                <Name>{item.name}</Name>
-                <Introduce>{path == '/students' ? item.introduce : ''}</Introduce>
-              </div>
-              {path == '/students' ? (
+      <div>
+        {studentList.map(item => {
+          return (
+            <Link href={`${path}/${item.id}`} key={item.id} onClick={() => handleActive(item)}>
+              <List style={{ backgroundColor: active == item.id ? '#dce5ec' : '#f3f7f8' }}>
+                <img
+                  src={item.avatar}
+                  alt=""
+                  width={60}
+                  height={60}
+                  style={{ borderRadius: '50%' }}
+                />
                 <div
                   style={{
-                    position: 'absolute',
-                    right: '10px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    fontSize: '32px',
+                    marginLeft: 10,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-around',
                   }}
                 >
-                  <svg
-                    width="67"
-                    height="55"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{ transform: 'scale(60%)', marginTop: '10px' }}
-                  >
-                    <g>
-                      <path
-                        stroke="#f25984"
-                        strokeWidth="3"
-                        d="m33.5,13.7514c13.39959,-31.30447 65.89964,0 0,40.24861c-65.89964,-40.24861 -13.39959,-71.55308 0,-40.24861z"
-                        fill="#FFAFCC"
-                      />
-                    </g>
-                  </svg>
-                  <KizunaRank>{item.kizunaRank}</KizunaRank>
+                  <Name>{t(item.name)}</Name>
+                  <Introduce>{path == '/students' ? t(item.introduce) : ''}</Introduce>
                 </div>
-              ) : null}
-            </List>
-          </Link>
-        );
-      })}
+                {path == '/students' ? (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      fontSize: '32px',
+                    }}
+                  >
+                    <svg
+                      width="67"
+                      height="55"
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{ transform: 'scale(60%)', marginTop: '10px' }}
+                    >
+                      <g>
+                        <path
+                          stroke="#f25984"
+                          strokeWidth="3"
+                          d="m33.5,13.7514c13.39959,-31.30447 65.89964,0 0,40.24861c-65.89964,-40.24861 -13.39959,-71.55308 0,-40.24861z"
+                          fill="#FFAFCC"
+                        />
+                      </g>
+                    </svg>
+                    <KizunaRank>{item.kizunaRank}</KizunaRank>
+                  </div>
+                ) : null}
+              </List>
+            </Link>
+          );
+        })}
+      </div>
     </ListContainer>
   );
 };

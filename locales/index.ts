@@ -3,7 +3,10 @@ import { initReactI18next } from 'react-i18next';
 import student from './modules/student';
 import teacher from './modules/teacher';
 import base from './modules/base';
-const jaJP = Object.assign(student, teacher, base);
+import introduce from './modules/introduce';
+import club from './modules/club';
+import school from './modules/school';
+const jaJP = Object.assign(student, teacher, base, introduce, club, school);
 const resources = {
   'ja-JP': {
     translation: jaJP,

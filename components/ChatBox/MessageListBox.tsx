@@ -6,6 +6,7 @@ import selectStudentMessage from '@/utils/selectStudentMessage';
 import sessionStorageUtil from '@/utils/sessionStorage-util';
 import { SessionMenu } from '@/types/menu';
 import { RemoveMessage } from '@/hooks/useStudentMessage';
+import { useTranslation } from 'react-i18next';
 const Content = styled.div`
   height: 100%;
   padding-bottom: 0;
@@ -121,6 +122,7 @@ const activeReplyStyle = {
 const MessageListBox: FC<Props> = ({ selectStudent, mode, removeMessage }) => {
   const { setSession, getSession } = sessionStorageUtil();
   const [activeReply, changeActiveReply] = useState('');
+  const { t } = useTranslation();
   const messageContentRef = useRef<HTMLDivElement>(null);
   /**自动滚动到聊天框底部 */
   const scrollToBottom = () => {
@@ -157,7 +159,7 @@ const MessageListBox: FC<Props> = ({ selectStudent, mode, removeMessage }) => {
     }
   };
   /**删除一个消息 */
-  const removeMode = (msgId: string, type?: 'reply', replyId?: string, body?: Array<any>) => {
+  const removeMode = (msgId: string, type?: 'reply', replyId?: string, body?: Array<unknown>) => {
     if (mode) {
       if (type === 'reply' && body?.length != 1) {
         removeMessage(msgId, type, replyId);
@@ -190,7 +192,7 @@ const MessageListBox: FC<Props> = ({ selectStudent, mode, removeMessage }) => {
               </div>
               <div style={{ maxWidth: '450px' }}>
                 {!item.continuousSpeech ? (
-                  <div className="msg-name">{item.studentInfo.name}</div>
+                  <div className="msg-name">{t(item.studentInfo.name)}</div>
                 ) : null}
                 {item.messageType === 'text' ? (
                   <div
