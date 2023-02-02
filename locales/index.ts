@@ -6,7 +6,8 @@ import base from './modules/base';
 import introduce from './modules/introduce';
 import club from './modules/club';
 import school from './modules/school';
-const jaJP = Object.assign(student, teacher, base, introduce, club, school);
+import interest from './modules/interest';
+const jaJP = Object.assign(student, teacher, base, introduce, club, school, interest);
 const resources = {
   'ja-JP': {
     translation: jaJP,

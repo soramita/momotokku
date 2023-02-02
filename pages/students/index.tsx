@@ -10,7 +10,7 @@ type Props = {
   children: JSX.Element;
 };
 const Right = styled.div`
-  width: 55%;
+  width: 50%;
   height: 100%;
 `;
 const filterList: Filters = [

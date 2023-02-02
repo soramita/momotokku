@@ -16,6 +16,12 @@ export type StudentInfo = {
   birthday: string;
   school: string;
   club: string;
+  age: string;
+  height: string;
+  interest: string;
+  design: string;
+  illustration: string;
+  cv: string;
 };
 
 export interface StudentListProps {
