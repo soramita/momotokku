@@ -67,7 +67,7 @@ const MainListBox = styled.div`
 `;
 const MainLeft = styled.div`
   color: #2c4563;
-  width: 20%;
+  width: 30%;
 `;
 const MainRight = styled.div`
   color: #393a3e;
@@ -131,23 +131,23 @@ const StudentsId = () => {
             </div>
             <div style={{ padding: '10px 15px', fontSize: '18px', fontWeight: '600' }}>
               <MainListBox>
-                <MainLeft>年龄</MainLeft>
+                <MainLeft>{t('年龄')}</MainLeft>
                 <MainRight>{`${studentInfo?.age}${t('岁')}`}</MainRight>
               </MainListBox>
               <MainListBox>
-                <MainLeft>身高</MainLeft>
+                <MainLeft>{t('身高')}</MainLeft>
                 <MainRight>{studentInfo?.height}cm</MainRight>
               </MainListBox>
               <MainListBox>
-                <MainLeft>兴趣</MainLeft>
-                <MainRight>{studentInfo?.interest}</MainRight>
+                <MainLeft>{t('兴趣')}</MainLeft>
+                <MainRight>{t(studentInfo?.interest as string)}</MainRight>
               </MainListBox>
               <MainListBox>
-                <MainLeft>设计</MainLeft>
+                <MainLeft>{t('设计')}</MainLeft>
                 <MainRight>{studentInfo?.design}</MainRight>
               </MainListBox>
               <MainListBox>
-                <MainLeft>插画</MainLeft>
+                <MainLeft>{t('插画')}</MainLeft>
                 <MainRight>{studentInfo?.illustration}</MainRight>
               </MainListBox>
               <MainListBox>

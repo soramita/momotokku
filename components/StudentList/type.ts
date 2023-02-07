@@ -3,7 +3,7 @@ type FilterInfo = {
   name: string;
 };
 
-type Path = '/students' | '/studentMessage';
+type Path = '/students' | '/studentMessage' | 'publicChat';
 
 export type Filters = Array<FilterInfo>;
 

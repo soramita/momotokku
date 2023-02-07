@@ -1,0 +1,37 @@
+{
+  "id": "3881783",
+  "name": "momotalk",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "3456457",
+      "name": "设置",
+      "font_class": "shezhi",
+      "unicode": "e70f",
+      "unicode_decimal": 59151
+    },
+    {
+      "icon_id": "2593578",
+      "name": "群聊",
+      "font_class": "qunliao",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "5207131",
+      "name": "消息",
+      "font_class": "xiaoxi",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
+      "icon_id": "10593837",
+      "name": "用户-角色-用户名-单人_jurassic",
+      "font_class": "jurassic_user",
+      "unicode": "e6a5",
+      "unicode_decimal": 59045
+    }
+  ]
+}

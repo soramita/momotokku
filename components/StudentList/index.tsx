@@ -1,7 +1,6 @@
 import React, { FC, memo, useEffect, useState } from 'react';
 import { StudentInfo, StudentListProps } from './type';
 import styled from 'styled-components';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import sessionStorageUtil from '@/utils/sessionStorage-util';
@@ -10,7 +9,7 @@ import selectStudentMessage from '@/utils/selectStudentMessage';
 import { SessionMenu } from '@/types/menu';
 type Props = StudentListProps;
 const ListContainer = styled.div`
-  width: 50%;
+  width: 47%;
   border-right: 2px solid #e8e8e8;
   background-color: #f3f7f8;
   overflow-y: scroll;
@@ -32,7 +31,7 @@ const Header = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 999;
+  z-index: 99;
   background-color: #f3f7f8;
 `;
 const Title = styled.span`
@@ -153,14 +152,18 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
   const [showFilterBox, setShowFilterBox] = useState(false);
   const [activeFilter, setActiveFilter] = useState(0);
   const handleActive = (studentInfo: StudentInfo) => {
+    if (path !== 'publicChat') {
+      //当前是角色私聊时才触发
+      router.replace(`${path}/${studentInfo.id}`);
+      const msgInfo = selectStudentMessage(studentInfo.id);
+      if (!msgInfo) {
+        const selectStudentList = getSession(SessionMenu.SELECTSTUDENTLIST) as SelectStudentList;
+        selectStudentList.push({ studentId: studentInfo.id, messageList: [] });
+        setSession(SessionMenu.SELECTSTUDENTLIST, selectStudentList);
+      }
+    }
     setActive(studentInfo.id);
     setSession(SessionMenu.SELECTSTUDENT, studentInfo);
-    const msgInfo = selectStudentMessage(studentInfo.id);
-    if (!msgInfo) {
-      const selectStudentList = getSession(SessionMenu.SELECTSTUDENTLIST) as SelectStudentList;
-      selectStudentList.push({ studentId: studentInfo.id, messageList: [] });
-      setSession(SessionMenu.SELECTSTUDENTLIST, selectStudentList);
-    }
   };
   const handleOk = (id: number) => {
     const res = filters.filter(item => item.id == id);
@@ -253,7 +256,7 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
       <div>
         {studentList.map(item => {
           return (
-            <Link href={`${path}/${item.id}`} key={item.id} onClick={() => handleActive(item)}>
+            <div style={{ cursor: 'pointer' }} key={item.id} onClick={() => handleActive(item)}>
               <List style={{ backgroundColor: active == item.id ? '#dce5ec' : '#f3f7f8' }}>
                 <img
                   src={item.avatar}
@@ -302,7 +305,7 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
                   </div>
                 ) : null}
               </List>
-            </Link>
+            </div>
           );
         })}
       </div>

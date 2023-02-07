@@ -7,10 +7,13 @@ import '@fontsource/m-plus-rounded-1c/800.css';
 import '@fontsource/kosugi-maru';
 import '@/styles/global.css';
 import '@/locales/index';
+import '@/public/iconfont/iconfont.css';
 import sessionStorageUtil from '@/utils/sessionStorage-util';
+import localstorageUtil from '@/utils/localstorage-util';
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const { getSession } = sessionStorageUtil();
+  const { getLocal, setLocal } = localstorageUtil();
   const [imgs, setImgs] = useState([]);
   useEffect(() => {
     if (router.pathname == '/') {
@@ -18,6 +21,12 @@ export default function App({ Component, pageProps }: AppProps) {
     }
     if (getSession('imgs')) {
       setImgs(getSession('imgs'));
+    }
+    if (!getLocal('locales')) {
+      setLocal('locales', {
+        code: 'zh-CN',
+        language: '简体中文',
+      });
     }
   }, []);
   return (

@@ -255,7 +255,7 @@ const MessageListBox: FC<Props> = ({ selectStudent, mode, removeMessage }) => {
                     </div>
                   </div>
                 ) : (
-                  <div className="plot-content">
+                  <div className="plot-content" onClick={() => removeMode(item.id)}>
                     <div style={{ borderLeft: '2px solid #3594f9', paddingLeft: 10 }}>羁绊剧情</div>
                     <div style={{ borderTop: '1px solid #c2c2c2', margin: '8px 0' }}></div>
                     <PlotButton>{item.content}</PlotButton>
