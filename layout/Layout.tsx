@@ -9,6 +9,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import style from './Layout.module.scss';
+
 type Props = {
   children: JSX.Element;
 };
