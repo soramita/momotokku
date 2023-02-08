@@ -7,6 +7,8 @@ import sessionStorageUtil from '@/utils/sessionStorage-util';
 import { SelectStudentList } from '@/types/selectStudent';
 import selectStudentMessage from '@/utils/selectStudentMessage';
 import { SessionMenu } from '@/types/menu';
+import { useAppDispatch } from '@/hooks/useRedux';
+import { setRole } from '@/store/selectRoleReducer';
 type Props = StudentListProps;
 const ListContainer = styled.div`
   width: 47%;
@@ -144,10 +146,12 @@ const activeStyle = {
 
 const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const { setSession, getSession } = sessionStorageUtil();
   const [active, setActive] = useState(0);
   const [deg, setDeg] = useState(0);
+  const [sort, setSort] = useState(false);
   const [nowFilter, setNowFilter] = useState(filters[0].name);
   const [showFilterBox, setShowFilterBox] = useState(false);
   const [activeFilter, setActiveFilter] = useState(0);
@@ -162,6 +166,7 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
         setSession(SessionMenu.SELECTSTUDENTLIST, selectStudentList);
       }
     }
+    dispatch(setRole(studentInfo));
     setActive(studentInfo.id);
     setSession(SessionMenu.SELECTSTUDENT, studentInfo);
   };
@@ -169,6 +174,19 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
     const res = filters.filter(item => item.id == id);
     setNowFilter(res[0].name);
     setShowFilterBox(false);
+  };
+  const handleSort = () => {
+    setDeg(deg + 180);
+    if (sort) {
+      studentList = studentList.sort((a, b) => {
+        return b.name.localeCompare(a.name, 'ja-JP');
+      });
+    } else {
+      studentList = studentList.sort((a, b) => {
+        return a.name.localeCompare(b.name, 'ja-JP');
+      });
+    }
+    setSort(!sort);
   };
   useEffect(() => {
     setActive(Number(router.query.id));
@@ -193,7 +211,7 @@ const StudentList: FC<Props> = ({ title, studentList, path, filters }) => {
               <span>{t(nowFilter)}</span>
               <i></i>
             </FilterBox>
-            <SortBox onClick={() => setDeg(deg + 180)}>
+            <SortBox onClick={() => handleSort()}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 64" width="30">
                 <rect width="68" height="12" fill="#4c5b70"></rect>
                 <rect width="68" height="12" y="49" fill="#4c5b70"></rect>

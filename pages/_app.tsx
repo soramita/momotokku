@@ -10,6 +10,8 @@ import '@/locales/index';
 import '@/public/iconfont/iconfont.css';
 import sessionStorageUtil from '@/utils/sessionStorage-util';
 import localstorageUtil from '@/utils/localstorage-util';
+import { Provider } from 'react-redux';
+import { store } from '@/store/store';
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const { getSession } = sessionStorageUtil();
@@ -28,9 +30,9 @@ export default function App({ Component, pageProps }: AppProps) {
         language: '简体中文',
       });
     }
-  }, []);
+  }, [router.pathname]);
   return (
-    <>
+    <Provider store={store}>
       <Layout>
         <Component {...pageProps} />
       </Layout>
@@ -39,6 +41,6 @@ export default function App({ Component, pageProps }: AppProps) {
           return <img src={item} key={index} alt="" width={0} height={0} />;
         })}
       </div>
-    </>
+    </Provider>
   );
 }

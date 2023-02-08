@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import type { FC } from 'react';
 import styled from 'styled-components';
 import { createPortal } from 'react-dom';
@@ -51,28 +51,33 @@ const ModalContent = styled.div`
   padding: 15px;
 `;
 const Modal: FC<Props> = ({ title, visible, children, width = 600, height = 600, onClose }) => {
-  const dom = document.body;
-  return createPortal(
-    <div>
-      {visible ? (
-        <ModalContainer>
-          <ModalMask onClick={onClose} />
-          <ModalBox style={{ width, height }}>
-            <ModalTitle>
-              {title}
-              <div
-                style={{ position: 'absolute', right: 10, top: 0, cursor: 'pointer' }}
-                onClick={onClose}
-              >
-                ✕
-              </div>
-            </ModalTitle>
-            <ModalContent>{children}</ModalContent>
-          </ModalBox>
-        </ModalContainer>
-      ) : null}
-    </div>,
-    dom
-  );
+  const ref = useRef<Element | null>(null);
+  useEffect(() => {
+    ref.current = document.body;
+  }, []);
+  return visible
+    ? createPortal(
+        <div>
+          {visible ? (
+            <ModalContainer>
+              <ModalMask onClick={onClose} />
+              <ModalBox style={{ width, height }}>
+                <ModalTitle>
+                  {title}
+                  <div
+                    style={{ position: 'absolute', right: 10, top: 0, cursor: 'pointer' }}
+                    onClick={onClose}
+                  >
+                    ✕
+                  </div>
+                </ModalTitle>
+                <ModalContent>{children}</ModalContent>
+              </ModalBox>
+            </ModalContainer>
+          ) : null}
+        </div>,
+        ref.current as Element
+      )
+    : null;
 };
 export default Modal;

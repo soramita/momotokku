@@ -1,8 +1,10 @@
 const sessionStorageUtil = () => {
   const getSession = <T = any>(key: string): T => {
-    const res = sessionStorage.getItem(key);
-    if (res) {
-      return JSON.parse(res);
+    if (typeof window !== 'undefined') {
+      const res = sessionStorage.getItem(key);
+      if (res) {
+        return JSON.parse(res);
+      }
     }
     return null as any;
   };

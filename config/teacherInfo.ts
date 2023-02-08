@@ -12,4 +12,10 @@ export default {
   kizunaRank: 0,
   school: '',
   club: '夏莱',
+  age: '',
+  height: '',
+  interest: '',
+  design: '',
+  illustration: '',
+  cv: '',
 } as Teacher;

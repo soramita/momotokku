@@ -1,8 +1,10 @@
 const localstorageUtil = () => {
   const getLocal = (key: string) => {
-    const res = localStorage.getItem(key);
-    if (res) {
-      return JSON.parse(res);
+    if (typeof window !== 'undefined') {
+      const res = localStorage.getItem(key);
+      if (res) {
+        return JSON.parse(res);
+      }
     }
     return null;
   };

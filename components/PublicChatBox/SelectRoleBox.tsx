@@ -1,10 +1,7 @@
 import teacherInfo from '@/config/teacherInfo';
 import React, { FC, SetStateAction } from 'react';
 import styled from 'styled-components';
-import Image from 'next/image';
-import sessionStorageUtil from '@/utils/sessionStorage-util';
-import { StudentInfo } from '../StudentList/type';
-import { SessionMenu } from '@/types/menu';
+import { useAppSelector } from '@/hooks/useRedux';
 const SelectRoleContainer = styled.div`
   background-color: #4b5a6f;
   min-height: 60px;
@@ -37,8 +34,7 @@ const style = {
   cursor: 'pointer',
 };
 const SelectRoleBox: FC<Props> = ({ changeIsStudentRole, isStudentRole }) => {
-  const { getSession } = sessionStorageUtil();
-  const studentRole = getSession<StudentInfo>(SessionMenu.SELECTSTUDENT);
+  const studentRole = useAppSelector(state => state.selectRole.nowSelectRole);
   return (
     <SelectRoleContainer>
       <div
@@ -47,7 +43,7 @@ const SelectRoleBox: FC<Props> = ({ changeIsStudentRole, isStudentRole }) => {
         onClick={() => changeIsStudentRole(true)}
       >
         <div style={!isStudentRole ? style : {}}></div>
-        <Image src={studentRole?.avatar} width={44} height={44} alt="" />
+        <img src={studentRole?.avatar} width={44} height={44} alt="" />
       </div>
       <div
         style={{ position: 'relative' }}
@@ -55,7 +51,7 @@ const SelectRoleBox: FC<Props> = ({ changeIsStudentRole, isStudentRole }) => {
         onClick={() => changeIsStudentRole(false)}
       >
         <div style={isStudentRole ? style : {}}></div>
-        <Image src={teacherInfo.avatar} width={44} height={44} alt="" />
+        <img src={teacherInfo.avatar} width={44} height={44} alt="" />
       </div>
     </SelectRoleContainer>
   );

@@ -1,9 +1,10 @@
 import localstorageUtil from '@/utils/localstorage-util';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import Modal from './Modal';
+const Modal = dynamic(() => import('@/components/Modal'));
 const ContainerBox = styled.div`
   background: #4c5b70;
   height: 100%;
@@ -32,6 +33,11 @@ const linkConfig = [
     id: 2,
     icon: '&#xe618;',
     path: '/studentMessage',
+  },
+  {
+    id: 3,
+    icon: '&#xe60a;',
+    path: '/publicChat',
   },
 ];
 
@@ -92,21 +98,19 @@ const Container = () => {
       <LinkList className="iconfont" onClick={() => setSetting(true)}>
         &#xe70f;
       </LinkList>
-      {setting ? (
-        <Modal title={'设置'} visible={setting} onClose={closeSetting} width={300} height={200}>
-          <div>
-            <span>语言：</span>
-            <select
-              style={{ width: '100px' }}
-              defaultValue={localstorageUtil().getLocal('locales').code}
-              onChange={e => handleChange(e)}
-            >
-              <option value="zh-CN">{t('简体中文')}</option>
-              <option value="ja-JP">{t('日语')}</option>
-            </select>
-          </div>
-        </Modal>
-      ) : null}
+      <Modal title={'设置'} visible={setting} onClose={closeSetting} width={300} height={200}>
+        <div>
+          <span>语言：</span>
+          <select
+            style={{ width: '100px' }}
+            defaultValue={localstorageUtil().getLocal('locales')?.code}
+            onChange={e => handleChange(e)}
+          >
+            <option value="zh-CN">{t('简体中文')}</option>
+            <option value="ja-JP">{t('日语')}</option>
+          </select>
+        </div>
+      </Modal>
     </ContainerBox>
   );
 };
